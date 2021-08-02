@@ -1,0 +1,28 @@
+$mainColor:#FF9900;  //主要色
+$mainBg:#F5F5F5; //背景
+
+$blackColor:#000000;
+$whiteColor:#FFFFFF;
+
+$fontColor:#333333; //字体
+$fontColor6:#666666;
+$fontColor9:#999999;
+
+$borderColor:#E5E5E5;
+
+$mainBg1:#E7E9EA;
+
+$sideBarWidth:210px;
+$menuActive:#FFF7E6;
+$menuItemHeight:36px;
+$headerHeight:54px;
+
+:export {
+  mainColor: $mainColor;
+	mainBg: $mainBg;
+	fontColor: $fontColor;
+	fontColor6: $fontColor6;
+	blackColor: $blackColor;
+	whiteColor: $whiteColor;
+	menuActive: $menuActive;
+}
