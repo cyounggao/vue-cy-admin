@@ -1,8 +1,10 @@
 <template>
 	<div class="cy-anchor-item">
-		<div class="cy-anchor-item-title">
-			{{label}}
-		</div>
+		<slot name="title">
+			<div class="cy-anchor-item-title">
+				{{label}}
+			</div>
+		</slot>
 		<slot></slot>
 	</div>
 </template>
@@ -19,7 +21,7 @@ export default {
 		// 楼层名
 		name: {
 			type: String,
-			default: ''
+			required: true
 		}
 	},
 	data() {

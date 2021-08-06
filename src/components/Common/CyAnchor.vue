@@ -1,7 +1,7 @@
 <template>
 	<div class="cy-anchor-wrap" ref='cyAnchor'>
 		<slot></slot>
-		<ul class="cy-anchor-nav">
+		<ul class="cy-anchor-nav" v-if="showBtn">
 			<li v-for="(item,index) in cyAnchorNavList" :key="item.name" :class="{active: value === item.name}"
 				@click="arrive(item.name)">
 				{{item.label}}
@@ -12,6 +12,7 @@
 
 <script>
 	import utils from '@/utils'
+	import { getScrollContainer } from '@/utils/dom'
 	export default {
 		name: 'CyAnchor',
 		props: {
@@ -24,6 +25,10 @@
 			scrollDom: {
 				type: String,
 				default: ''
+			},
+			showBtn: {
+				type: Boolean,
+				default: true
 			}
 		},
 		data() {
@@ -43,7 +48,7 @@
 				if (this.scrollDom) {
 					return document.getElementById(this.scrollDom) || 'window'
 				} else {
-					return this.getScrollContainer(this.$refs.cyAnchor, true)
+					return getScrollContainer(this.$refs.cyAnchor, true)
 				}
 			}
 		},
@@ -62,6 +67,9 @@
 				this.getAnchorValue(this.scrollWrap.scrollTop)
 			}
 			this.scrollWrap.addEventListener('scroll', this.scrollFunDebounce)
+		},
+		beforeDestroy() {
+			this.scrollWrap.removeEventListener('scroll', this.scrollFunDebounce)
 		},
 		methods: {
 			// 初始化，获取电梯按钮数据，获取楼层高度映射
@@ -138,29 +146,6 @@
 						}
 					}, 10)
 				}
-			},
-			// 获取滚动的dom
-			getScrollContainer(el, vertical) {
-				let parent = el;
-				while (parent) {
-					if ([window, document, document.documentElement].includes(parent)) {
-						return window;
-					}
-					if (this.isScroll(parent, vertical)) {
-						return parent;
-					}
-					parent = parent.parentNode;
-				}
-				return parent;
-			},
-			isScroll(el, vertical) {
-				const determinedDirection = vertical !== null || vertical !== undefined;
-				const overflow = determinedDirection ?
-					vertical ?
-					getComputedStyle(el)['overflow-y'] :
-					getComputedStyle(el)['overflow-x'] :
-					getComputedStyle(el)['overflow'];
-				return overflow.match(/(scroll|auto)/);
 			}
 		}
 	}

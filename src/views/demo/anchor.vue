@@ -3,11 +3,20 @@
 		<cy-loading color="#f90" style="height: 60px;"></cy-loading>
 		<cy-anchor v-model="anchor">
 			<cy-anchor-item label="文章一" name="1" class="anchor-item">
-					<cy-text value="四大皆空很快就客户的时刻活动时间开放后即可恢复几十块的富滇银行覅打开了房间就看了圣诞节还是得开了房" style="width: 150px;" row="2"></cy-text>
-					<cy-text value="四大皆空很快就客户的时刻活动时间开放后即可恢复几十块的富滇银行覅打开了房间就看了圣诞节还是得开了房" style="width: 150px;" row="2"></cy-text>
+				<div class="text">
+					<cy-text
+						value="Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。如果你想在深入学习 Vue 之前对它有更多了解，我们制作了一个视频，带您了解其核心概念和一个示例工程。如果你已经是有经验的前端开发者，想知道 Vue 与其它库/框架有哪些区别，请查看对比其它框架。"
+						row="2">
+					</cy-text>
+				</div>
 			</cy-anchor-item>
 			<cy-anchor-item label="文章二" name="2" class="anchor-item">
-				<cy-text value="四大皆空很快就客户的时刻活动时间开放后即可恢复几十块的富滇银行覅打开了房间就看了圣诞节还是得开了房" style="width: 150px;" row="2"></cy-text>
+				<div class="text">
+					<cy-text
+						value="Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。如果你想在深入学习 Vue 之前对它有更多了解，我们制作了一个视频，带您了解其核心概念和一个示例工程。如果你已经是有经验的前端开发者，想知道 Vue 与其它库/框架有哪些区别，请查看对比其它框架。"
+						row="2">
+					</cy-text>
+				</div>
 			</cy-anchor-item>
 			<cy-anchor-item label="文章三" name="3" class="anchor-item">
 			</cy-anchor-item>
@@ -33,7 +42,8 @@
 		margin-bottom: 15px;
 		background-color: #fff;
 		height: 600px;
-		.text{
+
+		.text {
 			padding: 20px;
 		}
 	}

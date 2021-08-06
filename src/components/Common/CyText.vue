@@ -4,6 +4,7 @@
 </template>
 
 <script>
+	import { getScrollContainer } from '@/utils/dom'
 	export default {
 		// 显示文字组件，可以设置最多显示几行，超过后会隐藏并且鼠标hover显示全部信息（需要给组件设置宽度）
 		name: 'CyText',
@@ -20,6 +21,9 @@
 		computed: {
 			cyText() {
 				return this.$refs.cyText
+			},
+			scrollWrap() {
+				return getScrollContainer(this.$refs.cyText, true)
 			}
 		},
 		data() {
@@ -45,6 +49,9 @@
 		},
 		mounted() {
 			this.init()
+		},
+		beforeDestroy() {
+			
 		},
 		methods: {
 			init() {
@@ -85,29 +92,40 @@
 				if (!this.isShowHover) {
 					return
 				}
-				let box = e.target.getBoundingClientRect()
-				let top = box.top + box.height + 'px'
-				let left = 0
 				this.div.innerHTML = this.value
-				left = box.left + (box.width - this.div.getBoundingClientRect().width) / 2 + 'px'
+				let box = e.target.getBoundingClientRect()
+				let divRect = this.div.getBoundingClientRect()
+				let windowHeight = innerHeight || document.documentElement.clientHeight
+				let top = ''
+				let left = ''
+				left = box.left + (box.width - divRect.width) / 2 + 'px'
+				if(box.bottom + divRect.height - windowHeight > 10) {
+					top = box.top - divRect.height + 'px'
+				} else{
+					top = box.top + box.height + 'px'
+				}
 				this.div.style.top = top
 				this.div.style.left = left
 				this.div.classList.add('active')
+				this.scrollWrap.addEventListener('scroll', this.scrollFun)
 			},
 			mouseleave(e) {
 				if (!this.isShowHover) {
 					return
 				}
 				if (e.relatedTarget !== this.div) {
-					this.div.style.top = 0
-					this.div.style.left = 0
-					this.div.classList.remove('active')
+					this.scrollFun()
 				}
 				this.div.onmouseleave = () => {
-					this.div.style.top = 0
-					this.div.style.left = 0
-					this.div.classList.remove('active')
+					this.scrollFun()
 				}
+			},
+			// 最近的dom滚动时,关闭弹窗
+			scrollFun() {
+				this.div.style.top = 0
+				this.div.style.left = 0
+				this.div.classList.remove('active')
+				this.scrollWrap.removeEventListener('scroll', this.scrollFun)
 			}
 		}
 	}

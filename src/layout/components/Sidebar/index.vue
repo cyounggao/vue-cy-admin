@@ -52,13 +52,13 @@ export default {
       const route = this.$route
       const {
         meta,
-        path
+        name
       } = route
-      // if set path, the sidebar will highlight the path you set
+      // if set name, the sidebar will highlight the name you set
       if (meta.activeMenu) {
         return meta.activeMenu
       }
-      return path
+      return name
     },
     defaultOpeneds() {
       const Routes = this.$store.getters.permissionRoutes

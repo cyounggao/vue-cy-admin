@@ -1,10 +1,10 @@
 <template>
   <div v-if="!item.hidden">
     <template
-      v-if="hasOneShowingChild(item.children,item)&&((onlyOneChild.children&&onlyOneChild.children.length)||onlyOneChild.noShowingChildren)&&!item.alwaysShow"
+      v-if="hasOneShowingChild(item.children,item)&&(!(onlyOneChild.children&&onlyOneChild.children.length)||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
     >
       <el-menu-item
-        :index="resolvePath(onlyOneChild.path)"
+        :index="onlyOneChild.name"
         :class="{'submenu-title-noDropdown':!isNest}"
         @click.native="menuClick(item)"
       >
@@ -12,7 +12,7 @@
       </el-menu-item>
     </template>
 
-    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
+    <el-submenu v-else ref="subMenu" :index="item.name" popper-append-to-body>
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
