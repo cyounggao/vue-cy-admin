@@ -1,5 +1,7 @@
 # 一个后台管理系统模板
 
+## 在[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)基础上做了一点修改，主要是加上了动态路由权限，然后写了些组件等等
+
 ## 启动项目
 
 ```bash
