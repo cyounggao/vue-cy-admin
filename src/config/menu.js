@@ -16,7 +16,7 @@ export default [{
 	alwaysShow: true,
 	show: true,
 	children: [{
-		path: '/video',
+		path: '/anchor',
 		filePath: '/demo/anchor',
 		title: '锚点导航',
 		icon: 'el-icon-bottom-right',

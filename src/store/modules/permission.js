@@ -67,7 +67,7 @@ function loadView(filePath) {
 
 const state = {
   routes: [],
-  indexPath: '/DashBoard'
+  indexPath: '/demo'
 }
 
 const mutations = {
