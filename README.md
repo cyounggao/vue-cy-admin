@@ -1,6 +1,6 @@
 ## 简介
 
-使用vue3.x + vite + element-plus，开发的一套后台管理系统模板
+使用vue2.x + vue-cli4 + element-ui，开发的一套后台管理系统模板
 
 ## 功能
 
