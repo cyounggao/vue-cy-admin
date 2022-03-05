@@ -22,5 +22,21 @@ export default [{
 		icon: 'el-icon-bottom-right',
 		show: true,
 		children: []
+	},
+	{
+		path: '/table',
+		filePath: '/demo/table',
+		title: '表格',
+		icon: 'el-icon-bottom-right',
+		show: true,
+		children: []
+	},
+	{
+		path: '/tree-select',
+		filePath: '/demo/treeSelect',
+		title: '树形选择',
+		icon: 'el-icon-bottom-right',
+		show: true,
+		children: []
 	}]
 }]

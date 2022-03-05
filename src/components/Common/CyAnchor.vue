@@ -2,8 +2,7 @@
 	<div class="cy-anchor-wrap" ref='cyAnchor'>
 		<slot></slot>
 		<ul class="cy-anchor-nav" v-if="showBtn">
-			<li v-for="(item,index) in cyAnchorNavList" :key="item.name" :class="{active: value === item.name}"
-				@click="arrive(item.name)">
+			<li v-for="(item,index) in cyAnchorNavList" :key="item.name" :class="{active: value === item.name}" @click="arrive(item.name)">
 				{{item.label}}
 			</li>
 		</ul>
@@ -12,7 +11,9 @@
 
 <script>
 	import utils from '@/utils'
-	import { getScrollContainer } from '@/utils/dom'
+	import {
+		getScrollContainer
+	} from '@/utils/dom'
 	export default {
 		name: 'CyAnchor',
 		props: {
@@ -37,7 +38,7 @@
 				cyAnchorNavMap: {}, //电梯楼层高度的映射
 				scrollFunDebounceFun: utils.vueDebounce('scrollFun', 100),
 				scrollDisabled: false, //禁止滚动函数执行
-				valueType: 1  //当前楼层改变的类型，1是组件传递、按钮直达改变，2是通过滚动监听自动改变
+				valueType: 1 //当前楼层改变的类型，1是组件传递、按钮直达改变，2是通过滚动监听自动改变
 			}
 		},
 		computed: {
@@ -46,7 +47,7 @@
 			},
 			scrollWrap() {
 				if (this.scrollDom) {
-					return document.getElementById(this.scrollDom) || 'window'
+					return document.querySelector(this.scrollDom)
 				} else {
 					return getScrollContainer(this.$refs.cyAnchor, true)
 				}
@@ -74,13 +75,17 @@
 		methods: {
 			// 初始化，获取电梯按钮数据，获取楼层高度映射
 			init() {
-				let parentOffsetTop = this.$refs.cyAnchor.offsetTop
+				// 获取Anchor容器距离滚动容器的高度
+				let parentTop = this.$refs.cyAnchor.getBoundingClientRect().top - this.scrollWrap.getBoundingClientRect().top
 				this.cyAnchorNavList = this.$children.map(item => {
-					this.cyAnchorNavMap[item.name] = item.$el.offsetTop - parentOffsetTop
 					let rect = item.$el.getBoundingClientRect()
+					let itemScrollTop = item.$el.offsetTop
+					this.cyAnchorNavMap[item.name] = itemScrollTop
 					return {
-						scrollTop: item.$el.offsetTop - parentOffsetTop,
-						bottom: rect.bottom - this.scrollWrap.getBoundingClientRect().top,
+						scrollTop: itemScrollTop,
+						top: rect.top - parentTop,
+						bottom: rect.bottom - parentTop,
+						height: rect.height,
 						label: item.label,
 						name: item.name
 					}
@@ -93,14 +98,32 @@
 			scrollFunDebounce(e) {
 				!this.scrollDisabled && this.scrollFunDebounceFun(e)
 			},
-			// 根据当前高度获取楼层位置，这里根据 当前楼层的底部位置在 滚动可视区域 底部到 0.382比例处 判断，（1 - 0.618 = 0.382）
+			// 根据当前高度获取楼层位置
 			getAnchorValue(scrollTop) {
+				let arr = []
 				for (let i = 0; i < this.cyAnchorNavList.length; i++) {
-					if (this.cyAnchorNavList[i].bottom - scrollTop >= this.scrollWrap.getBoundingClientRect().height *
-						0.382) {
-						this.valueType = 2
-						this.$emit('input', this.cyAnchorNavList[i].name)
-						break
+					let item = this.cyAnchorNavList[i]
+					let height = this.scrollWrap.getBoundingClientRect().height + scrollTop
+					let value = 0
+					if (scrollTop <= item.top) {
+						value = height - item.top
+						if( value > item.height) {
+							value = item.height
+						} else if (value < 0) {
+							value = 0
+						}
+					} else if (scrollTop > item.top && scrollTop <= item.bottom) {
+						value = item.bottom - scrollTop
+					}
+					value = value / item.height
+					arr.push(value)
+				}
+				let max = Math.max(...arr)
+				for(let i = 0 ; i<arr.length; i++)  {
+					if(arr[i] === max) {
+							this.valueType = 2
+							this.$emit('input', this.cyAnchorNavList[i].name)
+							break
 					}
 				}
 			},

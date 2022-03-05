@@ -1,6 +1,18 @@
-# 一个后台管理系统模板
+## 简介
 
-## 在[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)基础上做了一点修改，主要是加上了动态路由权限，然后写了些组件等等
+使用vue3.x + vite + element-plus，开发的一套后台管理系统模板
+
+## 功能
+
+```
+- 多环境发布，配置对应环境数据（src/config/index.js）
+- 动态路由权限（数据格式参考 src/config/menu.js）
+- 多维度axios封装
+- 锚点导航组件
+- 二次封装el-table，实现自动分页
+- 下拉树形选择器
+- scss变量
+```
 
 ## 启动项目
 
@@ -13,13 +25,9 @@ npm config set registry https://registry.npm.taobao.org
 
 # 启动开发环境
 npm run dev
-
-默认用户
-admin
-123456
 ```
 
-## 打包生产
+## 打包
 
 ```bash
 # 测试环境
@@ -28,10 +36,8 @@ npm run test
 # 生产环境
 npm run build
 ```
+![系统](pic.gif)
 
-## 其他
 
-```bash
-# 代码格式检查，并自动修复
-npm run lint
-```
+## 鸣谢
+[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)

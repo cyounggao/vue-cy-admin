@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '../store'
 import qs from 'qs'
 import utils from '../utils'
-import host from '../config/host.js'
+import config from '../config/index.js'
 import {
   Message, MessageBox
 } from 'element-ui'
@@ -12,7 +12,7 @@ import {
 
 let lock = false
 const service = axios.create({
-  baseURL: host.api, // url = base url + request url
+  baseURL: config.api, // url = base url + request url
   withCredentials: true, // 是否在跨域请求时发送Cookie
   timeout: 300000 // 超时时间
 })

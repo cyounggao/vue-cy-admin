@@ -6,6 +6,7 @@ import CyAnchor from './CyAnchor'
 import CyAnchorItem from './CyAnchorItem'
 import CyDatePicker from './CyDatePicker'
 import CyLoading from './CyLoading'
+import CyTreeSelect from './CyTreeSelect'
 const component = {
     install: function(Vue){
         Vue.component('CyCell',CyCell)
@@ -16,6 +17,7 @@ const component = {
         Vue.component('CyAnchorItem',CyAnchorItem)
         Vue.component('CyDatePicker',CyDatePicker)
         Vue.component('CyLoading',CyLoading)
+        Vue.component('CyTreeSelect',CyTreeSelect)
     }
 }
 export default component

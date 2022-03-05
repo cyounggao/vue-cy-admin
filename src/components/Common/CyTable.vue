@@ -1,19 +1,18 @@
 <!-- 表格 -->
 <template>
 	<div class="cy-table-wrap">
-		<div class="fifter-wrap card" v-if="filter">
-				<!-- 表格筛选区域 -->
-				<el-form ref="classFilterForm" :model="filterData" :inline="true" class="class-filter-form"
-					:size="size">
-					<slot name="filter"></slot>
-					<el-form-item>
-						<el-button :size="size" icon="el-icon-search" type="primary" :loading="loading" @click="reload(1)">查询</el-button>
-					</el-form-item>
-				</el-form>
+		<div class="fifter-wrap card" v-if="$slots.default">
+			<!-- 表格筛选区域 -->
+			<el-form ref="classFilterForm" :model="filterData" :inline="true" class="class-filter-form" :size="size">
+				<slot name="filter"></slot>
+				<el-form-item>
+					<el-button :size="size" icon="el-icon-search" type="primary" :loading="loading" @click="reload(1)">查询</el-button>
+				</el-form-item>
+			</el-form>
 		</div>
-		<div v-show="!noTable" class="table-wrap card">
+		<div class="table-wrap card">
 			<!-- 表格头部按钮区域 -->
-			<div v-if="tableBtn" class="table-sort" flex="align:center justify:between">
+			<div v-if="$slots.btnLeft || $slots.btnRight" class="table-sort" flex="align:center justify:between">
 				<div class="btn-wrap-left">
 					<slot name="btnLeft"></slot>
 				</div>
@@ -21,9 +20,8 @@
 					<slot name="btnRight"></slot>
 				</div>
 			</div>
-			<el-table v-loading="loading" class="cy-table" :data="tableData" :size="size" style="width: 100%;"
-				@sort-change="sortChange" :span-method="spanMethod" @selection-change="selectionChange" @current-change="currentChange"
-				@row-click="rowClick">
+			<el-table v-loading="loading" class="cy-table" :data="tableData" :size="size" style="width: 100%;" v-bind="$attrs" @sort-change="sortChange"
+			  @selection-change="selectionChange" @current-change="currentChange" @row-click="rowClick">
 				<slot />
 				<div slot="empty" class="tablebox">
 					<img src="../../assets/images/no-data.png">
@@ -31,9 +29,8 @@
 				</div>
 			</el-table>
 			<!-- 表格分页 -->
-			<el-pagination v-if="paging" class="pagination-wrap" background hide-on-single-page
-				:current-page.sync="pageData.page" :page-size="pageData.limit" layout="total, prev, pager, next"
-				:total="tableCount" @current-change="pageChange" />
+			<el-pagination v-if="page" class="pagination-wrap" background hide-on-single-page :current-page.sync="pageData.page"
+			 :page-size="pageData.limit" layout="total, prev, pager, next" :total="tableCount" @current-change="pageChange" />
 		</div>
 	</div>
 </template>
@@ -46,19 +43,6 @@
 			api: {
 				required: true,
 				type: Function
-			},
-			filter: {
-				type: Boolean,
-				default: true
-			},
-			noTable: {
-				type: Boolean,
-				default: false
-			},
-			// 是否展示表格按钮区域
-			tableBtn: {
-				type: Boolean,
-				default: false
 			},
 			/**
 			 * 导出的配置项
@@ -97,13 +81,10 @@
 				default: 'mini'
 			},
 			// 是否分页
-			paging: {
+			page: {
 				type: Boolean,
 				default: true
-			},
-			spanMethod: {
-				type: Function
-			},
+			}
 		},
 		data() {
 			return {
@@ -114,20 +95,20 @@
 			}
 		},
 		activated() {
-			!this.noTable && this.init()
+			this.init()
 		},
 		mounted() {
-			!this.noTable && this.init()
+			this.init()
 		},
 		methods: {
 			init() {
 				this.tableData = []
-				const data = this.getParams(this.paging)
+				const data = this.getParams(this.page)
 				this.loading = true
 				this.api(data).then(res => {
 					this.loading = false
 					// 如果有分页
-					if (this.paging) {
+					if (this.page) {
 						this.tableData = res.data.list || []
 						this.tableCount = res.data.total || 0
 					} else {
@@ -160,7 +141,7 @@
 					e = 1
 				}
 				e && (this.pageData.page = e)
-				if(!this.noTable) {
+				if (!this.noTable) {
 					this.init()
 				}
 			},
@@ -169,12 +150,13 @@
 				const data = this.getParams(!this.exportConfig.noPage)
 				this.loadingDown = true
 				this.exportConfig.api(data).then((res) => {
+					// 处理下载
 					this.loadingDown = false
 				}).catch(() => {
 					this.loadingDown = false
 				})
 			},
-			// 以下是对el-table原来的方法再次封装emit出去
+			// 以下是对el-table原来的方法再次封装emit出去，（只选取了部分常用的）
 			// 多选
 			selectionChange(val) {
 				this.$emit('selection-change', val)
@@ -187,7 +169,11 @@
 				this.$emit('row-click', row, event, column)
 			},
 			// 排序
-			sortChange({ column, prop, order }) {
+			sortChange({
+				column,
+				prop,
+				order
+			}) {
 				this.$emit('sort-change', column, prop, order)
 			},
 			// 表格翻页
@@ -206,16 +192,19 @@
 			color: $fontColor9;
 		}
 	}
-	.class-filter-form{
-		::v-deep{
+
+	.class-filter-form {
+		::v-deep {
 			.el-select {
 				width: 140px;
 			}
-			.el-form-item{
+
+			.el-form-item {
 				margin-right: 25px;
 			}
 		}
 	}
+
 	.fifter-wrap {
 		margin-bottom: 15px;
 		position: relative;
@@ -230,10 +219,11 @@
 	.table-sort {
 		height: 60px;
 		padding: 0 15px;
-		
+
 		.el-dropdown-link {
 			cursor: pointer;
 		}
+
 		.btn-wrap-left {
 			margin-right: 40px;
 		}
