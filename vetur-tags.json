@@ -1,0 +1,23 @@
+{
+    "sg-cell": {
+        "description": "flex展示组件",
+        "attributes": [
+            "type",
+            "align",
+            "label",
+            "width",
+            "gap",
+            "value"
+        ]
+    },
+    "sg-table": {
+        "description": "全局表格组件",
+        "attributes": [
+            "api",
+            "page-data",
+            "filter-data",
+            "size",
+            "page"
+        ]
+    }
+}

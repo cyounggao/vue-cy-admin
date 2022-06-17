@@ -1,31 +1,74 @@
-article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
 	display: block;
 	outline: none;
 }
-body{
+body {
 	font-size: 14px;
 	color: $fontColor;
 	line-height: 1.4;
 }
-body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,form,fieldset,legend,input,textarea,p,blockquote,th,td,button {
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fieldset,
+legend,
+input,
+textarea,
+p,
+blockquote,
+th,
+td,
+button {
 	margin: 0;
 	padding: 0;
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	text-size-adjust: none;
 	box-sizing: border-box;
-	font-family: -apple-system,SF UI Display,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+	font-family: -apple-system, SF UI Display, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
+		WenQuanYi Micro Hei, sans-serif;
 	outline: none !important;
 }
-button,h1,h2,h3,h4,h5,h6{
+button,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	font-size: 100%;
 }
-fieldset,img,button {
+fieldset,
+img,
+button {
 	border: 0;
 }
-img{
+img {
 	vertical-align: top;
 }
-li{
+li {
 	list-style: none;
 }
 input {
@@ -35,20 +78,24 @@ input {
 	border-radius: 0;
 	font-size: 100%;
 }
-i{
+i {
 	font-style: normal;
 }
-input,select,textarea,button {
+input,
+select,
+textarea,
+button {
 	-webkit-appearance: none;
-  	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	outline: none;
 }
-input[type=search] {
+input[type="search"] {
 	-webkit-appearance: textfield;
 	font-family: inherit;
 	font-size: 100%;
 }
-input::-webkit-search-decoration,input::-webkit-search-cancel-button {
+input::-webkit-search-decoration,
+input::-webkit-search-cancel-button {
 	display: none;
 }
 input:-webkit-autofill {

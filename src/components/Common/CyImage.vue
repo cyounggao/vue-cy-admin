@@ -1,140 +1,231 @@
 <template>
-	<div class="img-wrap">
-		<el-image :class="imgBg?'black': ''" ref="elIamge" :src="src" :preview-src-list="srcList" fit="contain"
-			:z-index="3000" style="display: block;" @load="loadSuccess">
-			<div slot="placeholder" class="image-slot">
-				<i class="el-icon-loading"></i>
-			</div>
-			<div slot="error" class="el-image__error">
-				<img src="../../assets/images/fail-img.png">
-			</div>
-		</el-image>
-		<div class="icon" v-if="srcList.length">
-			<i class="iconfont iconzoomin" @click="clickHandler" />
-		</div>
-	</div>
-
+  <div class="cy-image" :style="imgStyle" ref="cyImage">
+    <el-image
+      ref="elIamge"
+      :src="imgSrc"
+      :preview-src-list="srcList"
+      :fit="fit"
+      :class="{ 'cy-image--black': imgBg }"
+      :z-index="9999"
+      style="display: block; height: 100%"
+      @load="loadSuccess"
+    >
+      <div slot="placeholder" class="cy-image__placeholder">
+        <img
+          src="../../assets/images/fail-img.png"
+          :style="`width: ${imgWidth}px;`"
+        />
+      </div>
+      <div slot="error" class="cy-image__error">
+        <img
+          src="../../assets/images/fail-img.png"
+          :style="`width: ${imgWidth}px;`"
+        />
+      </div>
+    </el-image>
+    <div v-if="icon" class="cy-image__icon" :style="{ borderRadius: radius }">
+      <i class="iconfont" :style="`font-size: ${size}px`" :class="icon" />
+    </div>
+  </div>
 </template>
 
 <script>
-	export default {
-		// 二次封装element-ui 图片组件
-		name: 'CyImage',
-		props: {
-			src: {
-				type: String,
-				default: ''
-			},
-			// 图片的尺寸，计算高度需要
-			scale: {
-				type: Number,
-				default: 1.7778
-			},
-			//图片预览，传true 预览当前图片，传数组预览数组的图片
-			preview: {
-				type: [Boolean, Array],
-				default: false
-			}
-		},
-		data() {
-			return {
-				detailVisible: false,
-				imgBg: false
-			}
-		},
-		computed: {
-			srcList() {
-				if (this.$isArr(this.preview)) {
-					return this.preview
-				} else {
-					return this.preview ? [this.src] : []
-				}
-			}
-		},
-		watch: {
-			scale(val) {
-				if (val) {
-					const width = this.$refs.elIamge.$el.getBoundingClientRect().width || 200
-					this.$refs.elIamge.$el.style.height = width * this.scale + 'px'
-				}
-			}
-		},
-		mounted() {
-			const width = this.$refs.elIamge.$el.getBoundingClientRect().width || 200
-			this.$refs.elIamge.$el.style.height = width * this.scale + 'px'
-		},
-		methods: {
-			loadSuccess(e) {
-				let img = e.target || {}
-				let scale = this.$getScale({
-					width: img.naturalWidth,
-					height: img.naturalHeight
-				})
-				if (scale < 1.77 && scale !== this.scale) {
-					this.imgBg = true
-				}
-			},
-			clickHandler() {
-				this.$refs.elIamge.clickHandler()
-			}
-		}
-	}
+import { addResizeListener, removeResizeListener } from '@/utils/resize-event'
+// 图片组件
+export default {
+  name: 'CyImage',
+  props: {
+    // 图片路径
+    src: {
+      type: String,
+      default: ''
+    },
+    //图片上的图标，false无图标
+    icon: {
+      type: [String, Boolean],
+      default: false
+    },
+    // 圆角
+    radius: {
+      type: String,
+      default: '5px'
+    },
+    //图标的尺寸
+    size: {
+      type: Number,
+      default: 16
+    },
+    //图片的比例 高/宽 ,借助这个算图片的高度
+    ratio: {
+      type: Number,
+      default: 1.78
+    },
+    //图片是否可以点击预览
+    preview: {
+      type: [Boolean, Array],
+      default: false
+    },
+    //图片的宽度，不传通过js获取
+    width: {
+      type: Number,
+      default: 0
+    },
+    fit: {
+      type: String,
+      default: 'contain'
+    }
+  },
+  data() {
+    return {
+      imgBg: false,
+      imgWidth: 0
+    }
+  },
+  computed: {
+    imgSrc() {
+      return this.src
+    },
+    srcList() {
+      if (this.$isArr(this.preview)) {
+        return this.preview
+      } else {
+        return this.preview ? [this.imgSrc] : []
+      }
+    },
+    wrap() {
+      return this.$refs.cyImage
+    },
+    imgStyle() {
+      let style = {
+        borderRadius: this.radius
+      }
+      this.width && (style.width = this.width + 'px')
+      return style
+    }
+  },
+  watch: {
+    ratio(val) {
+      if (val) {
+        this.getHeight()
+      }
+    }
+  },
+  mounted() {
+    addResizeListener(this.wrap, this.getHeight)
+    this.getHeight()
+  },
+  beforeDestroy() {
+    removeResizeListener(this.wrap, this.getHeight)
+  },
+  methods: {
+    loadSuccess(e) {
+      let img = e.target || {}
+      let ratio = getRatio({
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      })
+      if (ratio !== this.ratio && this.fit !== 'cover') {
+        this.imgBg = true
+      }
+      function getRatio(obj) {
+        if (obj && obj.height && obj.width) {
+          let num = obj.height / obj.width
+          num = num.toFixed(2) - 0
+          return num
+        } else {
+          return 1
+        }
+      }
+    },
+    getHeight() {
+      let width = 0
+      if (this.width) {
+        width = this.width
+      } else {
+        width = this.wrap.getBoundingClientRect().width
+      }
+
+      if (width) {
+        let height = Math.round(width * this.ratio)
+        if (this.ratio > 1) {
+          this.imgWidth = width * 0.4
+        } else {
+          this.imgWidth = height * 0.4
+        }
+        this.wrap.style.height = height + 'px'
+      }
+    }
+  }
+}
 </script>
 
-<style scoped lang="scss">
-	.img-wrap {
-		position: relative;
-		border-radius: 5px;
-		overflow: hidden;
-		.icon{
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			top: 0;
-			left: 0;
-			border-radius: 5px;
-			background-color: transparent;
-			transition: all 0.3s linear;
-			.iconfont {
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				color: $whiteColor;
-				cursor: pointer;
-				opacity: 0;
-				z-index: -1;
-				transition: all 0.3s linear;
-				font-size: 24px;
-			}
-			
-			&:hover {
-				background-color: rgba(0, 0, 0, 0.3);
-			
-				.iconfont {
-					z-index: 1;
-					opacity: 1;
-				}
-			}
-		}
-		
-	}
+<style lang="scss">
+.cy-image {
+  position: relative;
+  overflow: hidden;
 
-	.black {
-		::v-deep {
-			.el-image__inner {
-				background-color: $blackColor;
-			}
-		}
-	}
+  .cy-image__icon {
+    background-color: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    cursor: pointer;
 
-	::v-deep {
-		.el-image__error {
-			background: #F2F2F4;
+    .iconfont {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $whiteColor;
+      line-height: 1;
 
-			img {
-				width: 45%;
-			}
-		}
-	}
+      &::after {
+        content: '';
+        position: absolute;
+        width: 50%;
+        height: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: $blackColor;
+        z-index: 1;
+      }
+
+      &::before {
+        position: relative;
+        z-index: 2;
+      }
+    }
+  }
+}
+
+.cy-image--black {
+  .el-image__inner {
+    background-color: $blackColor;
+  }
+}
+
+.cy-image__error {
+  background: #f2f2f4;
+}
+
+.cy-image__placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background-color: #f2f2f4;
+  background: linear-gradient(90deg, #f2f2f4 25%, #e6e6e6 37%, #f2f2f4 63%);
+  background-size: 400% 100%;
+  animation: el-skeleton-loading 1.4s ease infinite;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
 </style>

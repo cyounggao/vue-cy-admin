@@ -1,0 +1,40 @@
+{
+    "cy-cell/type": {
+        "options": [
+            "left",
+            "right",
+            "between"
+        ],
+        "description": "left: 左边固定宽度，右边自适应；right: 右边固定宽度，左边自适应；between: 两端对齐；默认left"
+    },
+    "cy-cell/align": {
+        "description": "align-center的属性，默认stretch"
+    },
+    "cy-cell/label": {
+        "description": "左边的内容，slot为left"
+    },
+    "cy-cell/width": {
+        "description": "固定宽度时具体的宽度，为0不设置，默认为0"
+    },
+    "cy-cell/gap": {
+        "description": "左右元素的距离，默认5，单位为px"
+    },
+    "cy-cell/value": {
+        "description": "右边的内容，默认插槽"
+    },
+    "cy-table/api": {
+        "description": "请求表格数据的接口函数"
+    },
+    "cy-table/page-data": {
+        "description": "分页的参数，作为params传给api接口，默认{limit: 10, page: 1}"
+    },
+    "cy-table/filter-data": {
+        "description": "筛选的参数，作为params传给api接口"
+    },
+    "cy-table/size": {
+        "description": "表格尺寸"
+    },
+    "cy-table/page": {
+        "description": "表格是否分页，默认为true，当为false时，pageData不会传递给api接口"
+    }
+}

@@ -1,20 +1,32 @@
 <template>
   <div v-if="!item.hidden">
     <template
-      v-if="hasOneShowingChild(item.children,item)&&(!(onlyOneChild.children&&onlyOneChild.children.length)||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+      v-if="
+        hasOneShowingChild(item.children, item) &&
+        (!(onlyOneChild.children && onlyOneChild.children.length) ||
+          onlyOneChild.noShowingChildren) &&
+        !item.alwaysShow
+      "
     >
       <el-menu-item
         :index="onlyOneChild.name"
-        :class="{'submenu-title-noDropdown':!isNest}"
+        :class="{ 'submenu-title-noDropdown': !isNest }"
         @click.native="menuClick(item)"
       >
-        <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
+        <item
+          :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
+          :title="onlyOneChild.meta.title"
+        />
       </el-menu-item>
     </template>
 
     <el-submenu v-else ref="subMenu" :index="item.name" popper-append-to-body>
       <template slot="title">
-        <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
+        <item
+          v-if="item.meta"
+          :icon="item.meta && item.meta.icon"
+          :title="item.meta.title"
+        />
       </template>
       <sidebar-item
         v-for="child in item.children"
@@ -30,9 +42,7 @@
 
 <script>
 import path from 'path'
-import {
-  isExternal
-} from '@/utils/validate'
+import { isExternal } from '@/utils/validate'
 import Item from './Item'
 
 export default {
@@ -63,7 +73,7 @@ export default {
   },
   methods: {
     hasOneShowingChild(children = [], parent) {
-      const showingChildren = children.filter(item => {
+      const showingChildren = children.filter((item) => {
         if (item.hidden) {
           return false
         } else {
@@ -100,7 +110,8 @@ export default {
     },
     // 点击菜单
     menuClick(item) {
-      if (item.notAllowed) { // 判断菜单权限
+      if (item.notAllowed) {
+        // 判断菜单权限
         const rootMenu = this.$parent.rootMenu
         this.$nextTick(() => {
           rootMenu.activeIndex = this.$route.path
@@ -108,8 +119,8 @@ export default {
         })
       } else {
         this.$router.push({
-					name: item.name
-				})
+          name: item.name
+        })
       }
     }
   }

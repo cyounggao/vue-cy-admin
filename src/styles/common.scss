@@ -1,147 +1,124 @@
-body,html {
-  height: 100%;
-  overflow: hidden;
-  background-color: $mainBg;
+body,
+html {
+	height: 100%;
+	background-color: $mainBg;
 }
-// @font-face {
-//     font-family: 'dinRegular';
-//     src: url('../assets/font/DIN-Regular.otf');
+/* chrome & safari 浏览器 */
+/*滚动条整体部分,必须要设置*/
+::-webkit-scrollbar{
+	width: 6px;
+	height: 6px;
+	background-color: transparent;
+}
+/*滚动条的轨道*/
+::-webkit-scrollbar-track{
+	background-color: transparent;
+}
+/*滚动条的滑块按钮*/
+::-webkit-scrollbar-thumb{
+	border-radius: 3px;
+	background-color: rgba(153,153,153,0.3);
+	box-shadow: none;
+}
+/*滚动条的上下两端的按钮*/
+::-webkit-scrollbar-button{
+	height: 0;
+	width: 0;
+	background-color: transparent;
+}
+// *{
+// 	/*三角箭头的颜色*/
+// 	scrollbar-arrow-color: rgba(0,0,0,0);
+// 	/*滚动条滑块按钮的颜色*/
+// 	scrollbar-face-color: rgba(153,153,153,0.3);
+// 	/*滚动条整体颜色*/
+// 	scrollbar-highlight-color: transparent;
+// 	/*滚动条阴影*/
+// 	scrollbar-shadow-color: transparent;
+// 	/*滚动条轨道颜色*/
+// 	scrollbar-track-color: transparent;
+// 	/*滚动条3d亮色阴影边框的外观颜色——左边和上边的阴影色*/
+// 	scrollbar-3dlight-color:transparent;
+// 	/*滚动条3d暗色阴影边框的外观颜色——右边和下边的阴影色*/
+// 	scrollbar-darkshadow-color: transparent;
+// 	/*滚动条基准颜色*/
+// 	scrollbar-base-color: rgba(153,153,153,0.3);
 // }
-// @font-face {
-//     font-family: 'Lato-Regular'; 
-//     src: url('../assets/font/Lato-Regular.ttf'); 
-// }
+
+
 #nprogress .bar {
-  background: $mainColor !important;
+	background: $mainColor !important;
 }
 #nprogress .peg {
 	box-shadow: 0 0 10px $mainColor, 0 0 5px $mainColor;
 }
 .ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .clearfix {
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
 }
 [center] {
-  text-align: center !important;
+	text-align: center !important;
 }
 [left] {
-    text-align: left !important;
+	text-align: left !important;
 }
 [right] {
-    text-align: right !important;
+	text-align: right !important;
 }
 
-.container{
+.container {
 	padding: 0 20px 55px;
 	min-height: calc(100vh - #{$headerHeight} - #{$headerHeight});
 	display: flex;
 	flex-direction: column;
 }
 
-.card{
-	background-color: #FFFFFF;
+.card {
+	background-color: #ffffff;
 	padding: 0 20px;
 	box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.05);
 	border-radius: 4px;
-	overflow: hidden;
+}
+.border {
+	height: 1px;
+	width: 100%;
+	background-color: $borderColor;
 }
 
-.cy-btn{
-	display: inline-block;
-	background-color: $whiteColor;
-	border-radius: 4px;
-	font-size: 14px;
-	padding: 6px 17px;
+.link {
 	cursor: pointer;
-	border: 1px solid rgba(255, 68, 0, 0.5);
-	color: $mainColor;
-	& + .cy-btn{
-		margin-left: 30px;
-	}
-	i{
-		font-size: 14px;
-		margin-right: 10px;
-	}
-	&.cy-btn-info{
-		border-color: #CCCCCC;
-		color: $fontColor6;
-		transition: all 0.3s linear;
-		i{
-			color: $blackColor;
-			transition: all 0.3s linear;
-		}
-		&:hover{
-			color: $mainColor;
-			border-color: $mainColor;
-			i{
-				color: $mainColor;
-			}
-		}
+	transition: all 0.3s linear;
+	&:hover {
+		color: $mainColor;
 	}
 }
-	.border{
-		height: 1px;
-		width: 100%;
-		background-color: $borderColor;
+
+.no-data {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	text-align: center;
+	color: #999;
+}
+
+.tablebox {
+	line-height: 1;
+	padding: 50px 0 100px;
+
+	img {
+		width: 370px;
 	}
-	
-	.prefix-iconfont{
-		margin-left: 4px;
+
+	p {
+		margin-top: 15px;
+		font-size: 16px;
 	}
-	
-	
-	.image-slot{
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 50px;
-	}
-	
-	.link{
-		cursor: pointer;
-		transition: all 0.3s linear;
-		&:hover{
-			color: $mainColor;
-		}
-	}
-	
-	.no-data {
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		text-align: center;
-		color: #999;
-	}
-	
-	.tablebox {
-		line-height: 1;
-		padding: 50px 0 100px;
-	
-		img{
-			width: 370px;
-		}
-	
-		p {
-			margin-top: 15px;
-			font-size: 16px;
-		}
-	}
-	
-	.user-form{
-		padding: 0 30px;
-		.el-form-item__content{
-			line-height: 1;
-		}
-		.el-form-item__label{
-			line-height: 1;
-			margin-bottom: 12px;
-		}
-	}
+}

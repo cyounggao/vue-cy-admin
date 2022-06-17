@@ -1,200 +1,283 @@
 <template>
-	<div class="cy-anchor-wrap" ref='cyAnchor'>
-		<slot></slot>
-		<ul class="cy-anchor-nav" v-if="showBtn">
-			<li v-for="(item,index) in cyAnchorNavList" :key="item.name" :class="{active: value === item.name}" @click="arrive(item.name)">
-				{{item.label}}
-			</li>
-		</ul>
-	</div>
+  <div class="anchor clearfix" ref="anchor">
+    <ul class="anchor__nav card">
+      <li
+        v-for="(item, key) in anchorNavData"
+        :key="key"
+        :class="{ active: value === key, disabled: item.disabled }"
+        @click="arrive(key, item)"
+      >
+        <i v-if="item.icon" :class="item.icon"></i>
+        <span class="ellipsis" :title="item.label">{{ item.label }}</span>
+      </li>
+    </ul>
+    <div class="anchor__content">
+      <slot></slot>
+    </div>
+  </div>
 </template>
 
 <script>
-	import utils from '@/utils'
-	import {
-		getScrollContainer
-	} from '@/utils/dom'
-	export default {
-		name: 'CyAnchor',
-		props: {
-			// 当前楼层
-			value: {
-				type: String,
-				default: ''
-			},
-			// 滚动的元素，不传默认取离元素最近的可以滚动的元素
-			scrollDom: {
-				type: String,
-				default: ''
-			},
-			showBtn: {
-				type: Boolean,
-				default: true
-			}
-		},
-		data() {
-			return {
-				cyAnchorNavList: [], //电梯按钮数据
-				cyAnchorNavMap: {}, //电梯楼层高度的映射
-				scrollFunDebounceFun: utils.vueDebounce('scrollFun', 100),
-				scrollDisabled: false, //禁止滚动函数执行
-				valueType: 1 //当前楼层改变的类型，1是组件传递、按钮直达改变，2是通过滚动监听自动改变
-			}
-		},
-		computed: {
-			wrap() {
-				return this.$refs.cyAnchor
-			},
-			scrollWrap() {
-				if (this.scrollDom) {
-					return document.querySelector(this.scrollDom)
-				} else {
-					return getScrollContainer(this.$refs.cyAnchor, true)
-				}
-			}
-		},
-		watch: {
-			// 监听楼层变化，当为父组件传递，或者按钮直达时，手动滚动到当前楼层
-			'value': function(val) {
-				this.valueType === 1 && this.scrollDomFun(this.cyAnchorNavMap[val])
-			}
-		},
-		async mounted() {
-			await this.init()
-			// 如果传了当前楼层，直接到达对应的高度
-			if (this.value) {
-				this.scrollWrap.scrollTop = this.cyAnchorNavMap[this.value]
-			} else { //没有传楼层，则根据当前高度自动获取
-				this.getAnchorValue(this.scrollWrap.scrollTop)
-			}
-			this.scrollWrap.addEventListener('scroll', this.scrollFunDebounce)
-		},
-		beforeDestroy() {
-			this.scrollWrap.removeEventListener('scroll', this.scrollFunDebounce)
-		},
-		methods: {
-			// 初始化，获取电梯按钮数据，获取楼层高度映射
-			init() {
-				// 获取Anchor容器距离滚动容器的高度
-				let parentTop = this.$refs.cyAnchor.getBoundingClientRect().top - this.scrollWrap.getBoundingClientRect().top
-				this.cyAnchorNavList = this.$children.map(item => {
-					let rect = item.$el.getBoundingClientRect()
-					let itemScrollTop = item.$el.offsetTop
-					this.cyAnchorNavMap[item.name] = itemScrollTop
-					return {
-						scrollTop: itemScrollTop,
-						top: rect.top - parentTop,
-						bottom: rect.bottom - parentTop,
-						height: rect.height,
-						label: item.label,
-						name: item.name
-					}
-				})
-			},
-			//滚动的函数
-			scrollFun(e) {
-				this.getAnchorValue(e.target.scrollTop)
-			},
-			scrollFunDebounce(e) {
-				!this.scrollDisabled && this.scrollFunDebounceFun(e)
-			},
-			// 根据当前高度获取楼层位置
-			getAnchorValue(scrollTop) {
-				let arr = []
-				for (let i = 0; i < this.cyAnchorNavList.length; i++) {
-					let item = this.cyAnchorNavList[i]
-					let height = this.scrollWrap.getBoundingClientRect().height + scrollTop
-					let value = 0
-					if (scrollTop <= item.top) {
-						value = height - item.top
-						if( value > item.height) {
-							value = item.height
-						} else if (value < 0) {
-							value = 0
-						}
-					} else if (scrollTop > item.top && scrollTop <= item.bottom) {
-						value = item.bottom - scrollTop
-					}
-					value = value / item.height
-					arr.push(value)
-				}
-				let max = Math.max(...arr)
-				for(let i = 0 ; i<arr.length; i++)  {
-					if(arr[i] === max) {
-							this.valueType = 2
-							this.$emit('input', this.cyAnchorNavList[i].name)
-							break
-					}
-				}
-			},
-			//直达楼层
-			arrive(name) {
-				if (name === this.value || this.scrollDisabled) {
-					return
-				}
-				this.valueType = 1
-				this.$emit('input', name)
-			},
-			// 模拟滚动
-			scrollDomFun(itemScrollTop) {
-				this.scrollDisabled = true //模拟滚动过程中，禁用直达楼层和监听的滚动事件
-				let speed = 50
-				let scrollTop = this.scrollWrap.scrollTop
-				if (itemScrollTop > scrollTop) {
-					// 向下滚动
-					let timer = setInterval(() => {
-						scrollTop += speed
-						if (scrollTop < itemScrollTop) {
-							this.scrollWrap.scrollTop = scrollTop
-						} else {
-							this.scrollWrap.scrollTop = itemScrollTop
-							clearInterval(timer)
-							setTimeout(() => {
-								this.scrollDisabled = false
-							}, 90)
-						}
-					}, 10)
-				} else {
-					// 向上滚动
-					let timer = setInterval(() => {
-						scrollTop -= speed
-						if (scrollTop >= itemScrollTop) {
-							this.scrollWrap.scrollTop = scrollTop
-						} else {
-							this.scrollWrap.scrollTop = itemScrollTop
-							clearInterval(timer)
-							setTimeout(() => {
-								this.scrollDisabled = false
-							}, 90)
-						}
-					}, 10)
-				}
-			}
-		}
-	}
+import utils from '@/utils'
+import { getScrollContainer } from '@/utils/dom'
+export default {
+  name: 'Anchor',
+  props: {
+    // 当前楼层
+    value: {
+      type: String,
+      default: ''
+    },
+    // 滚动的元素，不传默认取离元素最近的可以滚动的元素
+    scrollDom: {
+      type: String,
+      default: ''
+    },
+    //固定（position: fixed）在滚动区域类的高度
+    fixedHeight: {
+      type: Number,
+      default: 54
+    }
+  },
+  data() {
+    return {
+      anchorNavData: {}, //电梯楼层高度的映射
+      scrollFunDebounceFun: utils.vueDebounce('scrollFun', 100),
+      valueType: 1, //当前楼层改变的类型，1是组件传递、按钮直达改变，2是通过滚动监听自动改变
+      children: []
+    }
+  },
+  computed: {
+    scrollWrap() {
+      if (this.scrollDom) {
+        return document.querySelector(this.scrollDom)
+      } else {
+        return getScrollContainer(this.$refs.anchor, true)
+      }
+    }
+  },
+  watch: {
+    // 监听楼层变化，当为父组件传递，或者按钮直达时，手动滚动到当前楼层
+    value(val) {
+      if (this.valueType === 1) {
+        const scrollTop = this.getAnchorItemInfo(
+          this.anchorNavData[val]?.dom
+        ).scrollTop
+        this.scrollElement(scrollTop)
+      } else {
+        this.valueType = 1
+      }
+    }
+  },
+  mounted() {
+    this.calcChildren()
+    this.init()
+    let scrollTop = 0
+    if (this.anchorNavData[this.value]) {
+      scrollTop = this.getAnchorItemInfo(
+        this.anchorNavData[this.value].dom
+      ).scrollTop
+      this.scrollElement(scrollTop)
+    } else {
+      scrollTop = this.getScrollTop(this.scrollWrap)
+      this.getAnchorValue(scrollTop)
+    }
+    this.scrollWrap.addEventListener('scroll', this.scrollFunDebounce)
+  },
+  beforeDestroy() {
+    this.scrollWrap.removeEventListener('scroll', this.scrollFunDebounce)
+  },
+  methods: {
+    calcChildren() {
+      let children = this.$slots.default.map((item) => item.componentInstance)
+      this.children = treeDeep(children)
+      function treeDeep(data, res = []) {
+        data.forEach((item) => {
+          if (item.$vnode.tag.indexOf('AnchorItem') > -1) {
+            res.push(item)
+          } else {
+            item.$children &&
+              item.$children.length &&
+              treeDeep(item.$children, res)
+          }
+        })
+        return res
+      }
+    },
+    // 初始化，获取电梯按钮数据，获取楼层高度映射
+    init() {
+      this.children.forEach((item) => {
+        this.$set(this.anchorNavData, item.name, {
+          dom: item.$el,
+          label: item.label,
+          icon: item.icon,
+          disabled: item.disabled
+        })
+      })
+    },
+    /**
+     *
+     * @param {Dom} e
+     * @description 获取元素的scrollTop
+     */
+    getScrollTop(e) {
+      if (e.scrollTop !== undefined) {
+        return e.scrollTop
+      } else if (e.document) {
+        return (
+          e.document.documentElement.scrollTop ||
+          window.pageYOffset ||
+          e.document.body.scrollTop ||
+          0
+        )
+      }
+      return e.documentElement.scrollTop || e.body.scrollTop || 0
+    },
+    // 获取AnchorItem dom 的scrollTop,bottom,height
+    getAnchorItemInfo(dom) {
+      if (!dom) {
+        return {}
+      }
+      const scrollTop = this.getScrollTop(this.scrollWrap)
+      const rect = dom.getBoundingClientRect()
+      return {
+        scrollTop: rect.top - this.fixedHeight + scrollTop,
+        bottom: rect.bottom - this.fixedHeight + scrollTop,
+        height: rect.height
+      }
+    },
+
+    //滚动的处理函数
+    scrollFun(e) {
+      const scrollTop = this.getScrollTop(e.target)
+      this.getAnchorValue(scrollTop)
+    },
+    // 函数防抖
+    scrollFunDebounce(e) {
+      this.scrollFunDebounceFun(e)
+    },
+    // 根据当前高度获取楼层位置，通过计算每个元素在可视区域的高度，与自身实际高度的占比（全部都不在可视区域为0，全部都在则为1），判断当前处在那个楼层
+    getAnchorValue(scrollTop) {
+      let obj = {}
+      for (let i = 0; i < this.children.length; i++) {
+        const item = this.getAnchorItemInfo(this.children[i].$el)
+        const scrollWrapHeight = this.scrollWrap.getBoundingClientRect
+          ? this.scrollWrap.getBoundingClientRect().height
+          : this.scrollWrap.innerHeight
+        const height = scrollWrapHeight + scrollTop - this.fixedHeight
+        let value = 0
+        if (scrollTop <= item.scrollTop) {
+          value = height - item.scrollTop
+          value = value > item.height ? item.height : value < 0 ? 0 : value
+        } else if (scrollTop > item.scrollTop && scrollTop <= item.bottom) {
+          value = item.bottom - scrollTop
+        }
+        value = value / item.height
+        if (obj[value] === undefined) {
+          obj[value] = [this.children[i].name]
+        } else {
+          obj[value].push(this.children[i].name)
+        }
+      }
+      const maxKey = Math.max(...Object.keys(obj))
+      this.valueType = 2
+      // 如果占比相同,则取第一个 后期可以修改下 向下滚动取第一个,向上滚动取最后一个
+      this.$emit('input', obj[maxKey][0])
+    },
+    //直达楼层
+    arrive(name, item) {
+      if (name === this.value || item.disabled) {
+        return
+      }
+      this.valueType = 1
+      this.$emit('input', name)
+    },
+    // 模拟滚动
+    scrollElement(itemScrollTop) {
+      const scrollTop = this.getScrollTop(this.scrollWrap)
+      this.scrollAnimation(this.scrollWrap, scrollTop, itemScrollTop)
+    },
+    /**
+     *
+     * @param {Dom} el 要滚动的元素
+     * @param {Number} start 滚动元素的初始位置
+     * @param {Number} end 滚动元素的初始位置
+     * @description 滚动动画
+     */
+    scrollAnimation(el, start, end) {
+      let step = 0
+      // 根据距离计算步长，表现在先快后慢
+      const interval = Math.abs(end - start)
+      if (interval > 1000) {
+        step = 100
+      } else if (interval > 500) {
+        step = 50
+      } else if (interval > 200) {
+        step = 30
+      } else {
+        step = 20
+      }
+      if (start < end) {
+        start = start + step
+        if (start > end) {
+          start = end
+        }
+      }
+      if (start > end) {
+        start = start - step
+        if (start < end) {
+          start = end
+        }
+      }
+      el.scrollTo(0, start)
+      if (start !== end) {
+        requestAnimationFrame(() => {
+          this.scrollAnimation(el, start, end)
+        })
+      }
+    }
+  }
+}
 </script>
 
-<style lang="scss" scoped>
-	.cy-anchor-nav {
-		position: fixed;
-		right: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		cursor: pointer;
+<style lang="scss">
+.anchor__nav.card {
+  position: sticky;
+  top: $headerHeight;
+  z-index: 10;
+  float: left;
+  width: 200px;
+  padding: 15px 20px;
 
-		li {
-			line-height: 40px;
-			height: 40px;
-			text-align: center;
-			padding: 0 15px;
-			background-color: rgba(255, 255, 255, 0.4);
-			border-bottom: 1px solid #ccc;
-			user-select: none;
-
-			&.active {
-				background-color: $mainColor;
-				color: $whiteColor;
-			}
-		}
-	}
+  li {
+    line-height: 20px;
+    height: 20px;
+    width: fit-content;
+    user-select: none;
+    margin: 20px 0;
+    cursor: pointer;
+    &:hover {
+      color: $mainColor;
+    }
+    &.active {
+      color: $mainColor;
+    }
+    &.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    i {
+      margin-right: 6px;
+      vertical-align: top;
+    }
+    span {
+      display: inline-block;
+      max-width: 140px;
+    }
+  }
+}
+.anchor__content {
+  float: right;
+  width: calc(100% - 220px);
+}
 </style>

@@ -3,7 +3,12 @@
     <div class="login-wrap card">
       <h2>欢迎使用~</h2>
       <h3>后台管理平台</h3>
-      <el-form ref="loginForm" :model="loginData" class="user-form" :rules="loginRules">
+      <el-form
+        ref="loginForm"
+        :model="loginData"
+        class="user-form"
+        :rules="loginRules"
+      >
         <el-form-item prop="username">
           <el-input
             v-model="loginData.username"
@@ -23,104 +28,110 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width: 100%;" :loading="loading" @click="login">登录</el-button>
+          <el-button
+            type="primary"
+            style="width: 100%"
+            :loading="loading"
+            @click="login"
+            >登录</el-button
+          >
         </el-form-item>
       </el-form>
-      
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       redirect: null,
       loading: false,
       loginData: {
-        username: "",
-        password: "",
+        username: 'admin',
+        password: '123456'
       },
       loginRules: {
         username: [
           {
             required: true,
-            message: "请输入用户名",
-            trigger: "blur",
-          },
+            message: '请输入用户名',
+            trigger: 'blur'
+          }
         ],
         password: [
           {
             required: true,
-            message: "输入登录密码",
-            trigger: "blur",
-          },
-        ],
+            message: '输入登录密码',
+            trigger: 'blur'
+          }
+        ]
       }
-    };
+    }
   },
   computed: {
     indexPath() {
-      return this.$store.getters.indexPath;
-    },
+      return this.$store.getters.indexPath
+    }
   },
   watch: {
     $route: {
       handler: function (route) {
-        const arr = route.fullPath.split("redirect=");
+        const arr = route.fullPath.split('redirect=')
         if (arr.length === 2) {
-          this.redirect = this.$utf8to16(arr[1]);
+          this.redirect = this.$utf8to16(arr[1])
         }
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   mounted() {
     // 监听回车键
     document.onkeydown = (e) => {
-      const keyCode = window.event.keyCode;
+      const keyCode = window.event.keyCode
       if (keyCode === 13) {
-        this.login();
+        this.login()
       }
-    };
+    }
   },
   methods: {
     login() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.loading = true;
+          this.loading = true
           this.$store
-            .dispatch("user/login", this.loginData)
+            .dispatch('user/login', this.loginData)
             .then(() => {
-              this.loading = false;
-              this.$emit("loginSuccess");
+              this.loading = false
+              this.$emit('loginSuccess')
               this.$router.push({
-                path: this.redirect || this.indexPath,
-              });
+                path: this.redirect || this.indexPath
+              })
             })
             .catch(() => {
-              this.loading = false;
-            });
+              this.loading = false
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     register() {
-      this.$emit("register");
+      this.$emit('register')
     },
     resetPwd() {
-      this.$emit("resetPwd");
-    },
-  },
-};
+      this.$emit('resetPwd')
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
-.login{
-	padding-top: 120px;
+.login {
+  padding-top: 120px;
 }
+
 .login-wrap {
   width: 440px;
   margin: 0 auto;

@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar class="el-scrollbar-section" id="page-scrollbar">
+  <div>
     <div class="breadcrumb-container" flex="align:center">
       <breadcrumb />
     </div>
@@ -11,7 +11,7 @@
         <loading />
       </template>
     </section>
-  </el-scrollbar>
+  </div>
 </template>
 
 <script>
@@ -43,12 +43,6 @@ export default {
 </script>
 
 <style lang="scss">
-	// .el-scrollbar-section{
-	// 	transform: translateZ(0);
-	// }
-	.el-scrollbar-section .el-scrollbar__wrap{
-		overflow-x: hidden;
-	}
 	// fix css style bug in open el-dialog
 	.breadcrumb-container {
 		background-color: $mainBg;
