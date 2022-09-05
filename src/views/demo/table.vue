@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <cy-table :api="getData" :filter-data="filterData">
+    <cy-table :api="getData" :filter-data="filterData" sticky>
       <!-- 筛选区域 -->
       <template slot="filter">
         <el-form-item label="性别">
@@ -19,21 +19,10 @@
         <el-button type="success" size="mini">增加</el-button>
       </template>
       <!-- 列表 -->
-      <el-table-column label="序号">
-        {{ Math.random().toString(36).substring(2) }}
-      </el-table-column>
-      <el-table-column label="姓名">
-        {{ Math.random().toString(36).substring(2) }}
-      </el-table-column>
-      <el-table-column label="性别">
-        {{ Math.random().toString(36).substring(2) }}
-      </el-table-column>
-      <el-table-column label="年龄">
-        {{ Math.random().toString(36).substring(2) }}
-      </el-table-column>
-      <el-table-column label="爱好">
-        {{ Math.random().toString(36).substring(2) }}
-      </el-table-column>
+      <el-table-column label="序号" prop="index" align="center" />
+      <el-table-column label="姓名" prop="name" align="center" />
+      <el-table-column label="性别" prop="sex" align="center" />
+      <el-table-column label="年龄" prop="age" align="center" />
     </cy-table>
   </div>
 </template>
@@ -50,14 +39,19 @@ export default {
       return new Promise((resolve) => {
         setTimeout(() => {
           let list = []
-          for (let index = 0; index < 30; index++) {
-            list.push({ index })
+          for (let index = 0; index < 20; index++) {
+            list.push({
+              index: index + 1,
+              name: Math.random().toString(36).substring(2),
+              sex: Math.random()>0.5? '男':'女',
+              age: parseInt(Math.random() * 15) + 10,
+            })
           }
           let data = {
             code: 0,
             data: {
               list,
-              total: 30
+              total: 55
             }
           }
           resolve(data)

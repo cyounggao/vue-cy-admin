@@ -1,7 +1,7 @@
 <!-- 表格 -->
 <template>
   <div class="cy-table">
-    <div class="cy-table__fifter card" v-if="$slots.filter">
+    <div v-if="$slots.filter" class="cy-table__fifter card">
       <!-- 表格筛选区域 -->
       <el-form
         :model="filterData"
@@ -38,12 +38,12 @@
       </div>
       <el-table
         v-loading="loading"
+        v-bind="$attrs"
         class="cy-table__table"
         :class="{ 'cy-table__table--sticky': sticky }"
         :data="tableData"
         :size="size"
         style="width: 100%"
-        v-bind="$attrs"
         @sort-change="sortChange"
         @selection-change="selectionChange"
         @current-change="currentChange"
@@ -136,13 +136,13 @@ export default {
     }
   },
   //   activated() {
-  //     this.init()
+  //     this.getData()
   //   },
   mounted() {
-    this.init()
+    this.getData()
   },
   methods: {
-    init() {
+    getData() {
       this.tableData = []
       const data = this.getParams(this.page)
       this.loading = true
@@ -185,7 +185,7 @@ export default {
       }
       e && (this.pageData.page = e)
       if (!this.noTable) {
-        this.init()
+        this.getData()
       }
     },
     // 导出表格数据
@@ -221,7 +221,7 @@ export default {
     // 表格翻页
     pageChange(page) {
       this.pageData.page = page
-      this.init()
+      this.getData()
     }
   }
 }

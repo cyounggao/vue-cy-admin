@@ -99,13 +99,12 @@ input::-webkit-search-cancel-button {
 	display: none;
 }
 input:-webkit-autofill {
-	-webkit-box-shadow: 0 0 0 1000 white inset;
+	box-shadow: 0 0 0 1000 white inset;
 }
 input:focus {
 	outline: none;
 }
 a {
 	text-decoration: none;
-	tap-highlight-color: transparent;
-	color: $whiteColor;
+	color: $fontColor;
 }

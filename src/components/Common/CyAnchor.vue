@@ -104,7 +104,7 @@ export default {
         return res
       }
     },
-    // 初始化，获取电梯按钮数据，获取楼层高度映射
+    // 初始化，获取电梯按钮数据
     init() {
       this.children.forEach((item) => {
         this.$set(this.anchorNavData, item.name, {

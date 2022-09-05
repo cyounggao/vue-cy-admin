@@ -4,26 +4,29 @@
     :value="value"
     placeholder="请选择"
     size="mini"
-    @visible-change="visibleChange"
     clearable
-    style="width: 100%"
+    :disabled="disabled"
+    :filterable="filterable"
+    :filter-method="filterMethod"
     @clear="clear"
+    @visible-change="visibleChange"
   >
     <el-option
       ref="option"
-      class="option"
+      class="tree-select__option"
       :value="optionData.id"
       :label="optionData.name"
     >
       <el-tree
         ref="tree"
-        class="tree"
+        class="tree-select__tree"
         :node-key="nodeKey"
         :data="data"
         :props="props"
         :default-expanded-keys="[value]"
         highlight-current
         :expand-on-click-node="false"
+        :filter-node-method="filterNode"
         @node-click="handleNodeClick"
       ></el-tree>
     </el-option>
@@ -51,6 +54,14 @@ export default {
       type: [String, Number],
       default: 'id'
     },
+    filterable: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     // tree的props配置
     props: {
       type: Object,
@@ -67,24 +78,23 @@ export default {
       optionData: {
         id: '',
         name: ''
-      }
+      },
+      filterFlag: false
     }
   },
   watch: {
-    value: function (val) {
-      if (!this.isEmpty(this.data)) {
-        this.init(val)
-      }
+    value: {
+      handler(val) {
+        if (!this.isEmpty(this.data)) {
+          this.init(val)
+        }
+      },
+      immediate: true
     },
     data: function (val) {
       if (!this.isEmpty(val)) {
         this.init(this.value)
       }
-    }
-  },
-  mounted() {
-    if (!this.isEmpty(this.data)) {
-      this.init(this.value)
     }
   },
   methods: {
@@ -103,17 +113,21 @@ export default {
       if (val) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(val)
-          let node = this.$refs.tree.getNode(val)
+          const node = this.$refs.tree.getNode(val)
           this.optionData.id = val
           this.optionData.name = node.label
         })
       } else {
-        this.$refs.tree.setCurrentKey(null)
+        this.$nextTick(() => {
+          this.$refs.tree.setCurrentKey(null)
+        })
       }
     },
     visibleChange(e) {
       if (e) {
-        let selectDom = document.querySelector('.is-current')
+        this.filterFlag && this.$refs.tree.filter('')
+        this.filterFlag = false
+        const selectDom = this.$refs.tree.$el.querySelector('.is-current')
         setTimeout(() => {
           this.$refs.select.scrollToOption({ $el: selectDom })
         }, 0)
@@ -121,21 +135,34 @@ export default {
     },
     clear() {
       this.$emit('input', '')
+    },
+    filterMethod(val) {
+      this.filterFlag = true
+      this.$refs.tree.filter(val)
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      const label = this.props.label || 'name'
+      return data[label].indexOf(value) !== -1
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.option {
+<style lang="scss">
+.tree-select__option {
   height: auto;
   line-height: 1;
   padding: 0;
   background-color: #fff;
 }
 
-.tree {
+.tree-select__tree {
   padding: 4px 20px;
   font-weight: 400;
+  .el-tree-node.is-current > .el-tree-node__content {
+    color: $mainColor;
+    font-weight: 700;
+  }
 }
 </style>

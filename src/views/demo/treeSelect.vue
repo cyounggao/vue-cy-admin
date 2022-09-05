@@ -2,11 +2,7 @@
   <div class="container">
     <div class="card">
       <h3>树形选择器</h3>
-      <cy-tree-select
-        v-model="value"
-        :data="list"
-        style="width: 240px"
-      ></cy-tree-select>
+      <cy-tree-select v-model="value" filterable :data="list"></cy-tree-select>
       <h3>图片</h3>
       <cy-image
         src="https://img1.baidu.com/it/u=700675537,3936578503&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
@@ -16,7 +12,7 @@
         preview
       ></cy-image>
       <h3>文字展示</h3>
-      <cy-cell :gap="15" label="文字" style="width: 300px;">
+      <cy-cell :gap="15" label="文字" style="width: 300px">
         <cy-text
           value="豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。"
           :row="1"
@@ -55,11 +51,15 @@ export default {
           ]
         }
       ],
-      value: 1
+      value: ''
     }
   }
 }
 </script>
+<!-- 
+    
+
+ -->
 <style lang="scss" scoped>
 .card {
   padding-bottom: 15px;
